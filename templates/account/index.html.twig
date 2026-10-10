@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mis Cuentas - Mi Banco{% endblock %}
+
+{% block body %}
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; }
+
+    .topbar {
+        background: #003366; color: white; padding: 12px 30px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar .logo { font-size: 1.4em; font-weight: bold; }
+    .topbar .logo span { color: #ffcc00; }
+    .topbar .user-menu { display: flex; align-items: center; gap: 20px; }
+    .topbar .btn-logout {
+        background: #ffcc00; color: #003366; padding: 8px 16px;
+        border-radius: 4px; text-decoration: none; font-weight: bold;
+    }
+
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+    .sidebar { width: 240px; background: white; border-right: 1px solid #e0e0e0; padding: 20px 0; }
+    .sidebar a {
+        display: block; padding: 12px 25px; color: #333; text-decoration: none;
+        font-size: 0.95em; border-left: 3px solid transparent;
+    }
+    .sidebar a:hover { background: #f0f4f8; border-left-color: #003366; }
+    .sidebar a.active { background: #e6f0ff; border-left-color: #003366; color: #003366; font-weight: bold; }
+    .sidebar .section-title {
+        padding: 15px 25px 5px; font-size: 0.75em; text-transform: uppercase;
+        color: #888; letter-spacing: 1px;
+    }
+
+    .main { flex: 1; padding: 30px; }
+    .main h1 { margin: 0 0 5px; color: #003366; }
+    .main .subtitle { color: #666; margin-bottom: 30px; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .account-card {
+        background: white; border-radius: 10px; padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-left: 5px solid #003366;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none; color: inherit; display: block;
+    }
+    .account-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    .account-card h3 { margin: 0 0 10px; color: #003366; font-size: 1.1em; }
+    .account-card .balance { font-size: 2em; font-weight: bold; color: #28a745; margin: 10px 0; }
+    .account-card .owner { color: #888; font-size: 0.85em; }
+
+    .empty { text-align: center; padding: 60px; color: #888; }
+</style>
+
+<div class="topbar">
+    <div class="logo">🏦 <span>Mi</span>Banco</div>
+    <div class="user-menu">
+        <span>👤 {{ app.user.email }}</span>
+        <a href="{{ path('app_logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="section-title">Principal</div>
+        <a href="{{ path('app_dashboard') }}">📊 Dashboard</a>
+        <a href="{{ path('app_accounts') }}" class="active">💰 Mis cuentas</a>
+        <a href="#">💸 Transferencias</a>
+        <a href="#">📄 Movimientos</a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="section-title">Administración</div>
+            <a href="{{ path('app_admin') }}" style="color: #cc9900; font-weight: bold;">👑 Panel admin</a>
+        {% endif %}
+    </aside>
+
+    <main class="main">
+        <h1>Mis Cuentas</h1>
+        <p class="subtitle">
+            {% if is_granted('ROLE_ADMIN') %}
+                Mostrando <strong>todas las cuentas</strong> (modo administrador)
+            {% else %}
+                Gestiona tus cuentas bancarias
+            {% endif %}
+        </p>
+
+        {% if accounts is empty %}
+            <div class="empty">
+                <p style="font-size: 3em;">💭</p>
+                <p>No tienes cuentas todavía.</p>
+            </div>
+        {% else %}
+            <div class="cards">
+                {% for account in accounts %}
+                    <a href="{{ path('app_account_show', {id: account.id}) }}" class="account-card">
+                        <h3>{{ account.name }}</h3>
+                        <div class="balance">{{ account.balance }} €</div>
+                        <div class="owner">
+                            Propietario: {{ account.owner.email }}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

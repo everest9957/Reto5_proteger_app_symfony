@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mi Banco - Dashboard{% endblock %}
+
+{% block body %}
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; }
+
+    /* --- Barra superior --- */
+    .topbar {
+        background: #003366;
+        color: white;
+        padding: 12px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .topbar .logo { font-size: 1.4em; font-weight: bold; letter-spacing: 1px; }
+    .topbar .logo span { color: #ffcc00; }
+    .topbar .user-menu { display: flex; align-items: center; gap: 20px; }
+    .topbar .user-menu span { font-size: 0.95em; }
+    .topbar .btn-logout {
+        background: #ffcc00;
+        color: #003366;
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+    .topbar .btn-logout:hover { background: #e6b800; }
+
+    /* --- Layout --- */
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+
+    /* --- Sidebar --- */
+    .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e0e0e0;
+        padding: 20px 0;
+    }
+    .sidebar a {
+        display: block;
+        padding: 12px 25px;
+        color: #333;
+        text-decoration: none;
+        font-size: 0.95em;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+    }
+    .sidebar a:hover { background: #f0f4f8; border-left-color: #003366; }
+    .sidebar a.active { background: #e6f0ff; border-left-color: #003366; color: #003366; font-weight: bold; }
+    .sidebar .section-title {
+        padding: 15px 25px 5px;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        color: #888;
+        letter-spacing: 1px;
+    }
+
+    /* --- Contenido principal --- */
+    .main { flex: 1; padding: 30px; }
+    .main h1 { margin: 0 0 5px; color: #003366; font-size: 1.8em; }
+    .main .subtitle { color: #666; margin-bottom: 30px; }
+
+    /* --- Tarjetas de resumen --- */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        border-top: 4px solid #003366;
+    }
+    .card h3 { margin: 0 0 10px; color: #666; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+    .card .value { font-size: 1.8em; font-weight: bold; color: #003366; }
+    .card .value.positive { color: #28a745; }
+    .card .value.negative { color: #dc3545; }
+    .card .extra { font-size: 0.85em; color: #888; margin-top: 8px; }
+
+    /* --- Sección movimientos --- */
+    .section { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 25px; }
+    .section h2 { margin: 0 0 20px; color: #003366; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    table th, table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    table th { color: #666; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; }
+    table td.amount { text-align: right; font-weight: bold; }
+    table td.amount.positive { color: #28a745; }
+    table td.amount.negative { color: #dc3545; }
+
+    /* --- Acciones rápidas --- */
+    .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: #f0f4f8;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #003366;
+        font-weight: bold;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    .action-btn:hover { background: #e6f0ff; border-color: #003366; }
+    .action-btn .icon { font-size: 1.8em; margin-bottom: 8px; }
+
+    /* --- Admin highlight --- */
+    .admin-notice {
+        background: #fff8e1;
+        border-left: 4px solid #ffcc00;
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+    }
+    .admin-notice strong { color: #cc9900; }
+</style>
+
+<!-- Barra superior -->
+<div class="topbar">
+    <div class="logo">🏦 <span>Mi</span>Banco</div>
+    <div class="user-menu">
+        <span>👤 {{ app.user.email }}</span>
+        <a href="{{ path('app_logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="section-title">Principal</div>
+        <a href="#" class="active">📊 Dashboard</a>
+        <a href="#">💰 Mis cuentas</a>
+        <a href="#">💸 Transferencias</a>
+        <a href="#">📄 Movimientos</a>
+
+        <div class="section-title">Servicios</div>
+        <a href="#">💳 Tarjetas</a>
+        <a href="#">📈 Inversiones</a>
+        <a href="#">🏠 Préstamos</a>
+        <a href="#">⚙️ Configuración</a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="section-title">Administración</div>
+            <a href="#" style="color: #cc9900; font-weight: bold;">👑 Panel admin</a>
+            <a href="#" style="color: #cc9900;">👥 Gestión de usuarios</a>
+        {% endif %}
+    </aside>
+
+    <!-- Contenido -->
+    <main class="main">
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="admin-notice">
+                <strong>👑 Sesión de administrador.</strong> Tienes acceso completo al sistema.
+            </div>
+        {% endif %}
+
+        <h1>Hola, {{ app.user.email|split('@')[0]|capitalize }}</h1>
+        <p class="subtitle">Bienvenido a tu banca online. Aquí tienes un resumen de tu actividad.</p>
+
+        <!-- Tarjetas de resumen -->
+        <div class="cards">
+            <div class="card">
+                <h3>Saldo total</h3>
+                <div class="value">12.450,00 €</div>
+                <div class="extra">En 2 cuentas</div>
+            </div>
+            <div class="card">
+                <h3>Ingresos del mes</h3>
+                <div class="value positive">+2.300,00 €</div>
+                <div class="extra">Últimos 30 días</div>
+            </div>
+            <div class="card">
+                <h3>Gastos del mes</h3>
+                <div class="value negative">-1.125,50 €</div>
+                <div class="extra">Últimos 30 días</div>
+            </div>
+            <div class="card">
+                <h3>Movimientos</h3>
+                <div class="value">18</div>
+                <div class="extra">Este mes</div>
+            </div>
+        </div>
+
+        <!-- Últimos movimientos -->
+        <div class="section">
+            <h2>Últimos movimientos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th style="text-align: right;">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10/10/2026</td>
+                        <td>Nómina octubre</td>
+                        <td>Ingreso</td>
+                        <td class="amount positive">+2.300,00 €</td>
+                    </tr>
+                    <tr>
+                        <td>09/10/2026</td>
+                        <td>Supermercado</td>
+                        <td>Alimentación</td>
+                        <td class="amount negative">-85,20 €</td>
+                    </tr>
+                    <tr>
+                        <td>08/10/2026</td>
+                        <td>Alquiler</td>
+                        <td>Vivienda</td>
+                        <td class="amount negative">-750,00 €</td>
+                    </tr>
+                    <tr>
+                        <td>07/10/2026</td>
+                        <td>Restaurante</td>
+                        <td>Ocio</td>
+                        <td class="amount negative">-42,30 €</td>
+                    </tr>
+                    <tr>
+                        <td>06/10/2026</td>
+                        <td>Devolución compra</td>
+                        <td>Ingreso</td>
+                        <td class="amount positive">+18,90 €</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="section">
+            <h2>Acciones rápidas</h2>
+            <div class="actions">
+                <a href="#" class="action-btn"><span class="icon">💸</span>Transferir</a>
+                <a href="#" class="action-btn"><span class="icon">📥</span>Ingresar</a>
+                <a href="#" class="action-btn"><span class="icon">💳</span>Pagar</a>
+                <a href="#" class="action-btn"><span class="icon">📄</span>Recibos</a>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

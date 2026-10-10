@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ account.name }} - Mi Banco{% endblock %}
+
+{% block body %}
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; }
+
+    .topbar {
+        background: #003366; color: white; padding: 12px 30px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar .logo { font-size: 1.4em; font-weight: bold; }
+    .topbar .logo span { color: #ffcc00; }
+    .topbar .user-menu { display: flex; align-items: center; gap: 20px; }
+    .topbar .btn-logout {
+        background: #ffcc00; color: #003366; padding: 8px 16px;
+        border-radius: 4px; text-decoration: none; font-weight: bold;
+    }
+
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+    .sidebar { width: 240px; background: white; border-right: 1px solid #e0e0e0; padding: 20px 0; }
+    .sidebar a {
+        display: block; padding: 12px 25px; color: #333; text-decoration: none;
+        font-size: 0.95em; border-left: 3px solid transparent;
+    }
+    .sidebar a:hover { background: #f0f4f8; border-left-color: #003366; }
+    .sidebar a.active { background: #e6f0ff; border-left-color: #003366; color: #003366; font-weight: bold; }
+    .sidebar .section-title {
+        padding: 15px 25px 5px; font-size: 0.75em; text-transform: uppercase;
+        color: #888; letter-spacing: 1px;
+    }
+
+    .main { flex: 1; padding: 30px; }
+    .main h1 { margin: 0 0 5px; color: #003366; }
+    .main .subtitle { color: #666; margin-bottom: 30px; }
+
+    .account-hero {
+        background: linear-gradient(135deg, #003366 0%, #005599 100%);
+        color: white; padding: 40px; border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,51,102,0.3); margin-bottom: 30px;
+    }
+    .account-hero h2 { margin: 0 0 10px; font-size: 1.5em; opacity: 0.9; }
+    .account-hero .balance { font-size: 3.5em; font-weight: bold; margin: 20px 0; }
+    .account-hero .meta { font-size: 0.95em; opacity: 0.85; }
+
+    .section {
+        background: white; border-radius: 8px; padding: 25px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 25px;
+    }
+    .section h2 {
+        margin: 0 0 20px; color: #003366; font-size: 1.2em;
+        border-bottom: 1px solid #eee; padding-bottom: 10px;
+    }
+
+    .btn-back {
+        display: inline-block; padding: 10px 20px; background: #003366;
+        color: white; text-decoration: none; border-radius: 5px; font-weight: bold;
+        margin-top: 15px;
+    }
+    .btn-back:hover { background: #005599; }
+</style>
+
+<div class="topbar">
+    <div class="logo">🏦 <span>Mi</span>Banco</div>
+    <div class="user-menu">
+        <span>👤 {{ app.user.email }}</span>
+        <a href="{{ path('app_logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="section-title">Principal</div>
+        <a href="{{ path('app_dashboard') }}">📊 Dashboard</a>
+        <a href="{{ path('app_accounts') }}" class="active">💰 Mis cuentas</a>
+        <a href="#">💸 Transferencias</a>
+        <a href="#">📄 Movimientos</a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="section-title">Administración</div>
+            <a href="{{ path('app_admin') }}" style="color: #cc9900; font-weight: bold;">👑 Panel admin</a>
+        {% endif %}
+    </aside>
+
+    <main class="main">
+        <h1>{{ account.name }}</h1>
+        <p class="subtitle">Detalle de la cuenta</p>
+
+        <div class="account-hero">
+            <h2>Saldo disponible</h2>
+            <div class="balance">{{ account.balance }} €</div>
+            <div class="meta">
+                ID de cuenta: #{{ account.id }}<br>
+                Propietario: {{ account.owner.email }}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Próximamente</h2>
+            <p>Aquí podrás ver los movimientos de esta cuenta.</p>
+            <a href="{{ path('app_accounts') }}" class="btn-back">← Volver a mis cuentas</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

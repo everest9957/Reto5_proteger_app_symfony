@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Acceso Denegado - 403{% endblock %}
+
+{% block body %}
+<style>
+    .error-wrapper {
+        max-width: 600px;
+        margin: 100px auto;
+        text-align: center;
+        font-family: 'Segoe UI', sans-serif;
+        padding: 40px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .error-code {
+        font-size: 6em;
+        color: #dc3545;
+        margin: 0;
+        font-weight: bold;
+    }
+    .error-title {
+        font-size: 1.8em;
+        color: #333;
+        margin: 10px 0 20px;
+    }
+    .error-message {
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    .btn-back {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #003366;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+    .btn-back:hover { background: #005599; }
+</style>
+
+<div class="error-wrapper">
+    <div class="error-code">403</div>
+    <div class="error-title">🚫 Acceso Denegado</div>
+    <div class="error-message">
+        No tienes permisos para acceder a esta sección.
+        <br>
+        Si crees que es un error, contacta con el administrador.
+    </div>
+    <a href="{{ path('app_dashboard') }}" class="btn-back">← Volver al Dashboard</a>
+</div>
+{% endblock %}
